@@ -50,6 +50,8 @@ class Algorithm(object):
     """
     def __init__(self, arms, label='Algorithm'):
         self.arms = arms
+        for arm in self.arms:
+            arm.reset()
         # Evaluation of each arm
         self.evals = [None for _ in self.arms]
         # float values for played rounds and None for other rounds.

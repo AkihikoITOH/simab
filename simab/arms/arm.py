@@ -14,6 +14,9 @@ class Arm(object):
         self.is_predicted = False
         self.count = 0
 
+    def reset(self):
+        self.count = 0
+
     def pick(self, dry=False):
         """ Pick a reward from prediction only if prediction exists.
         """
