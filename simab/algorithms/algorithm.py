@@ -35,8 +35,9 @@ class Algorithm(object):
     """ Abstract class for various Multi-Armed Bandit algorithms.
 
     :param arms: list of arms
+    :param label: label of the arm
     """
-    def __init__(self, arms):
+    def __init__(self, arms, label='Algorithm'):
         self.arms = arms
         # Evaluation of each arm
         self.evals = [None for _ in self.arms]
@@ -44,6 +45,7 @@ class Algorithm(object):
         self.history = [[] for _ in self.arms]
         # float values for each round.
         self.full_history = [[] for _ in self.arms]
+        self.label = label
 
     def _select_arm(self):
         return selected_arm
@@ -67,4 +69,9 @@ class Algorithm(object):
             self._update(selected_arm, reward)
 
         return selected_arm, reward
+
+    def summary(self):
+        summary = {}
+        summary['']
+
 

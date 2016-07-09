@@ -8,9 +8,11 @@ class EpsilonGreedy(Algorithm):
 
     :param epsilon:
     """
-    def __init__(self, arms, epsilon):
-        Algorithm.__init__(self, arms)
+    def __init__(self, arms, epsilon, label=None):
+        Algorithm.__init__(self, arms, label=label)
         self.epsilon = epsilon
+        if self.label is None:
+            self.label = 'Epsilon Greedy(e=%s)' % self.epsilon
 
     def _select_arm(self):
         probabilities = [None for _ in self.arms]

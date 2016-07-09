@@ -9,9 +9,11 @@ class Softmax(Algorithm):
 
     :param tau: decides randomness of the exploration. larger tau means more randomness.
     """
-    def __init__(self, arms, tau):
-        Algorithm.__init__(self, arms)
+    def __init__(self, arms, tau, label=None):
+        Algorithm.__init__(self, arms, label=label)
         self.tau = tau
+        if self.label is None:
+            self.label = 'Softmax(t=%s)' % self.tau
 
     def _select_arm(self):
         unknown_arm = get_unknown_arm(self.history)
