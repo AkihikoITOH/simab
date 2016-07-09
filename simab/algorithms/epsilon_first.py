@@ -8,6 +8,7 @@ class EpsilonFirst(Algorithm):
     """ Epsilon-First Algorithm
 
     :param epsilon:
+    :param rounds: total rounds
     """
     def __init__(self, arms, epsilon, rounds=None):
         Algorithm.__init__(self, arms)
