@@ -91,5 +91,6 @@ class Algorithm(object):
         summary['empirical_sds'] = get_sds(self.history)
         summary['total_reward'] = sum([sum(h) for h in get_dense_history(self.history)])
         summary['plays'] = [len(h) for h in get_dense_history(self.history)]
+        return summary
 
 

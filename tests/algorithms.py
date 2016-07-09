@@ -25,7 +25,7 @@ class TestRandom(unittest.TestCase):
             algorithm.play()
         self.assertEqual(len(algorithm.history), len(arms))
         self.assertEqual(len(algorithm.history[0]), ROUNDS)
-        self.summary()
+        algorithm.summary()
 
     def test_prediction_play(self,):
         arms = []
@@ -38,7 +38,7 @@ class TestRandom(unittest.TestCase):
             algorithm.play()
         self.assertEqual(len(algorithm.history), len(arms))
         self.assertEqual(len(algorithm.history[0]), ROUNDS)
-        self.summary()
+        algorithm.summary()
 
 class TestEGreedy(unittest.TestCase):
     def test_play(self,):
@@ -50,7 +50,7 @@ class TestEGreedy(unittest.TestCase):
             algorithm.play()
         self.assertEqual(len(algorithm.history), len(arms))
         self.assertEqual(len(algorithm.history[0]), ROUNDS)
-        self.summary()
+        algorithm.summary()
 
     def test_prediction_play(self,):
         arms = []
@@ -63,7 +63,7 @@ class TestEGreedy(unittest.TestCase):
             algorithm.play()
         self.assertEqual(len(algorithm.history), len(arms))
         self.assertEqual(len(algorithm.history[0]), ROUNDS)
-        self.summary()
+        algorithm.summary()
 
 class TestEFirst(unittest.TestCase):
     def test_prediction_play(self,):
@@ -77,7 +77,7 @@ class TestEFirst(unittest.TestCase):
             algorithm.play()
         self.assertEqual(len(algorithm.history), len(arms))
         self.assertEqual(len(algorithm.history[0]), ROUNDS)
-        self.summary()
+        algorithm.summary()
 
 class TestOracle(unittest.TestCase):
     def test_prediction_play(self,):
@@ -91,7 +91,7 @@ class TestOracle(unittest.TestCase):
             algorithm.play()
         self.assertEqual(len(algorithm.history), len(arms))
         self.assertEqual(len(algorithm.history[0]), ROUNDS)
-        self.summary()
+        algorithm.summary()
 
 class TestSoftmax(unittest.TestCase):
     def test_play(self,):
@@ -103,7 +103,7 @@ class TestSoftmax(unittest.TestCase):
             algorithm.play()
         self.assertEqual(len(algorithm.history), len(arms))
         self.assertEqual(len(algorithm.history[0]), ROUNDS)
-        self.summary()
+        algorithm.summary()
 
     def test_prediction_play(self,):
         arms = []
@@ -116,7 +116,7 @@ class TestSoftmax(unittest.TestCase):
             algorithm.play()
         self.assertEqual(len(algorithm.history), len(arms))
         self.assertEqual(len(algorithm.history[0]), ROUNDS)
-        self.summary()
+        algorithm.summary()
 
 class TestUCB1(unittest.TestCase):
     def test_play(self,):
@@ -128,7 +128,7 @@ class TestUCB1(unittest.TestCase):
             algorithm.play()
         self.assertEqual(len(algorithm.history), len(arms))
         self.assertEqual(len(algorithm.history[0]), ROUNDS)
-        self.summary()
+        algorithm.summary()
 
     def test_prediction_play(self,):
         arms = []
@@ -141,7 +141,7 @@ class TestUCB1(unittest.TestCase):
             algorithm.play()
         self.assertEqual(len(algorithm.history), len(arms))
         self.assertEqual(len(algorithm.history[0]), ROUNDS)
-        self.summary()
+        algorithm.summary()
 
 class TestSingle(unittest.TestCase):
     def test_play(self,):
@@ -153,7 +153,7 @@ class TestSingle(unittest.TestCase):
             algorithm.play()
         self.assertEqual(len(algorithm.history), len(arms))
         self.assertEqual(len(algorithm.history[0]), ROUNDS)
-        self.summary()
+        algorithm.summary()
 
     def test_prediction_play(self,):
         arms = []
@@ -166,7 +166,7 @@ class TestSingle(unittest.TestCase):
             algorithm.play()
         self.assertEqual(len(algorithm.history), len(arms))
         self.assertEqual(len(algorithm.history[0]), ROUNDS)
-        self.summary()
+        algorithm.summary()
 
 if __name__ == '__main__':
     unittest.main()
