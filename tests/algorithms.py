@@ -2,8 +2,6 @@
 # -*- encoding: utf-8 -*-
 
 import unittest
-import os
-import sys
 from simab.arms.normal import NormalArm
 from simab.algorithms.epsilon_first import EpsilonFirst
 from simab.algorithms.epsilon_greedy import EpsilonGreedy

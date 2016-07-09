@@ -91,6 +91,9 @@ class Algorithm(object):
         summary['empirical_sds'] = get_sds(self.history)
         summary['total_reward'] = sum([sum(h) for h in get_dense_history(self.history)])
         summary['plays'] = [len(h) for h in get_dense_history(self.history)]
+        is_every_arm_predicted = all([arm.is_predicted for arm in self.arms])
+        if is_every_arm_predicted:
+            summary['predictions'] = [arm.prediction for arm in self.arms]
         return summary
 
 
