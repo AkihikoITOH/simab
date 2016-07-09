@@ -29,4 +29,5 @@ class Softmax(Algorithm):
     def summary(self):
         summary = Algorithm.summary(self)
         summary['tau'] = self.tau
+        return summary
 

@@ -34,4 +34,5 @@ class EpsilonFirst(Algorithm):
     def summary(self):
         summary = Algorithm.summary(self)
         summary['epsilon'] = self.epsilon
+        return summary
 
