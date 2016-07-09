@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 
-execfile("core.py")
-
 import random
 
 def idx_max(list_):
@@ -30,15 +28,17 @@ class Algorithm(object):
         self.arms = arms
         # Number of plays of each arm
         self.counts = [0 for _ in self.arms]
+        # Evaluation of each arm
+        self.evals = [None for _ in self.arms]
         # float values for played rounds and None for other rounds.
         self.history = [[] for _ in self.arms]
         # float values for each round.
         self.full_history = [[] for _ in self.arms]
 
-    def select_arm(self):
+    def _select_arm(self):
         return idx_arm
 
-    def update(self, selected_arm, reward):
+    def _update(self, selected_arm, reward):
         self.counts[selected_arm] += 1
 
         for idx, value in enumerate(self.values):
@@ -48,15 +48,13 @@ class Algorithm(object):
             else:
                 self.history[idx].append(None)
 
-        return
-
     def play(self, dry=False):
-        selected_arm = select_arm
+        selected_arm = self._select_arm()
         arm = self.arms[selected_arm]
         reward = arm.pick()
 
         if not dry:
-            self.update(selected_arm, reward)
+            self._update(selected_arm, reward)
 
         return selected_arm, reward
 

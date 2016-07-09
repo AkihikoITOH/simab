@@ -4,12 +4,18 @@
 import uuid
 
 class Arm(object):
+    """ Abstract Arm class.
+
+    :param label: labels of the arm. Defaulted to an UUID.
+    """
     def __init__(self, label=None):
         self.label = label or str(uuid.uuid4())
         self.prediction = None
         self.count = 0
 
     def pick(self):
+        """ Pick a reward from prediction only if prediction exists.
+        """
         self.count += 1
         if self.prediction is not None:
             reward = self.prediction[self.count]
