@@ -2,7 +2,7 @@
 # -*- encoding: utf-8 -*-
 
 import random
-from ..arm import Arm
+from .arm import Arm
 
 # TODO: 実装する
 

@@ -4,8 +4,8 @@
 import unittest
 import os
 import sys
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), '../simab'))
-from arms.normal import NormalArm
+# sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), '../simab'))
+from simab.arms.normal import NormalArm
 
 class TestNormalArm(unittest.TestCase):
     def test_pick(self,):

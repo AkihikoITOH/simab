@@ -2,7 +2,7 @@
 # -*- encoding: utf-8 -*-
 
 import random
-from ..arm import Arm
+from .arm import Arm
 
 class NormalArm(Arm):
     """ Arms which return rewards from normal distributions.
