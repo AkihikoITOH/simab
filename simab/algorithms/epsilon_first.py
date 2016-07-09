@@ -31,3 +31,7 @@ class EpsilonFirst(Algorithm):
             selected_arm = idx_max(get_means(self.history))
         return selected_arm
 
+    def summary(self):
+        summary = Algorithm.summary(self)
+        summary['epsilon'] = self.epsilon
+

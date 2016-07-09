@@ -24,3 +24,7 @@ class EpsilonGreedy(Algorithm):
                 probabilities[i] = self.epsilon/float(len(self.arms))
         return pick_by_probability(probabilities)
 
+    def summary(self):
+        summary = Algorithm.summary(self)
+        summary['epsilon'] = self.epsilon
+

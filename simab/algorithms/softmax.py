@@ -26,4 +26,7 @@ class Softmax(Algorithm):
             selected_arm = unknown_arm
         return selected_arm
 
+    def summary(self):
+        summary = Algorithm.summary(self)
+        summary['tau'] = self.tau
 

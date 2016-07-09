@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 
+import math
 import random
 
 def idx_max(list_):
@@ -22,6 +23,16 @@ def get_dense_history(history):
 def get_means(history):
     dense_history = get_dense_history(history)
     return [sum(h)/float(len(h)) if len(h)>0 else None for h in dense_history]
+
+def get_unbiased_variances(history):
+    means = get_means(history)
+    dh = get_dense_history(history)
+    vs = [sum([(means[idx]-r)**2.0 for r in h])/float(len(h)-1) if len(h)>1 else 0.0 for idx, h in enumerate(dh)]
+    return vs
+
+def get_sds(history):
+    unbiased_variances = get_unbiased_variances(history)
+    return [math.sqrt(uv) for uv in unbiased_variances]
 
 def get_unknown_arm(history):
     unknown = None
@@ -72,6 +83,13 @@ class Algorithm(object):
 
     def summary(self):
         summary = {}
-        summary['']
+        summary['algorithm'] = self.label
+        summary['history'] = self.history
+        summary['true_means'] = [arm.mu for arm in self.arms]
+        summary['true_sds'] = [arm.sigma for arm in self.arms]
+        summary['empirical_means'] = get_means(self.history)
+        summary['empirical_sds'] = get_sds(self.history)
+        summary['total_reward'] = sum([sum(h) for h in get_dense_history(self.history)])
+        summary['plays'] = [len(h) for h in get_dense_history(self.history)]
 
 
