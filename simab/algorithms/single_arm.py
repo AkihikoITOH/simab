@@ -8,9 +8,10 @@ class Single(Algorithm):
 
     :param idx_arm: index of arm to keep choosing
     """
-    def __init__(self, arms):
-        Algorithm.__init__(self, arms, idx_arm)
+    def __init__(self, arms, idx_arm):
+        Algorithm.__init__(self, arms)
+        self.idx_arm = idx_arm
 
     def _select_arm(self):
-        return idx_arm
+        return self.idx_arm
 

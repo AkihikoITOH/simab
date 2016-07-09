@@ -138,7 +138,7 @@ class TestSingle(unittest.TestCase):
         arms = []
         for i in range(3, 8):
             arms.append(NormalArm(0.1*float(i), 0.1))
-        algorithm = Single(arms, 5)
+        algorithm = Single(arms, 3)
         for _ in range(ROUNDS):
             algorithm.play()
         self.assertEqual(len(algorithm.history), len(arms))
@@ -150,7 +150,7 @@ class TestSingle(unittest.TestCase):
             arms.append(NormalArm(0.1*float(i), 0.1))
         for arm in arms:
             arm.predict(1000)
-        algorithm = Single(arms)
+        algorithm = Single(arms, 3)
         for _ in range(ROUNDS):
             algorithm.play()
         self.assertEqual(len(algorithm.history), len(arms))
