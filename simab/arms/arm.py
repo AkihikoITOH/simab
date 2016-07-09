@@ -11,17 +11,17 @@ class Arm(object):
     def __init__(self, label=None):
         self.label = label or str(uuid.uuid4())
         self.prediction = None
+        self.is_predicted = False
         self.count = 0
 
     def pick(self):
         """ Pick a reward from prediction only if prediction exists.
         """
-        self.count += 1
-        if self.prediction is not None:
+        if self.is_predicted:
             reward = self.prediction[self.count]
         else:
             reward = None
-        return None
+        return reward
 
     def predict(self, max_rounds):
         """ Set designated number of values as a prediction.
@@ -30,4 +30,5 @@ class Arm(object):
         :param max_rounds: maximum number of rounds to predict
         """
         self.prediction = [self.pick() for _ in range(max_rounds)]
+        self.is_predicted = True
 

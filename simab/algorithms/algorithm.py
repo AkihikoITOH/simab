@@ -19,6 +19,10 @@ def pick_by_probability(list_):
 def get_dense_history(history):
     return [[v for v in hist_arm if v is not None] for hist_arm in history]
 
+def get_means(history):
+    dense_history = get_dense_history(history)
+    return [sum(h)/float(len(h)) if len(h)>0 else None for h in dense_history]
+
 class Algorithm(object):
     """ Abstract class for various Multi-Armed Bandit algorithms.
 
@@ -26,8 +30,6 @@ class Algorithm(object):
     """
     def __init__(self, arms):
         self.arms = arms
-        # Number of plays of each arm
-        self.counts = [0 for _ in self.arms]
         # Evaluation of each arm
         self.evals = [None for _ in self.arms]
         # float values for played rounds and None for other rounds.
@@ -36,17 +38,15 @@ class Algorithm(object):
         self.full_history = [[] for _ in self.arms]
 
     def _select_arm(self):
-        return idx_arm
+        return selected_arm
 
     def _update(self, selected_arm, reward):
-        self.counts[selected_arm] += 1
-
-        for idx, value in enumerate(self.values):
-            self.full_history[idx].append(value)
+        for idx, _ in enumerate(self.arms):
             if selected_arm == idx:
-                self.history[idx].append(value)
+                self.history[idx].append(reward)
             else:
                 self.history[idx].append(None)
+        self.arms[selected_arm].count += 1
 
     def play(self, dry=False):
         selected_arm = self._select_arm()

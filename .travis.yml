@@ -9,5 +9,6 @@ install:
   - pip install simab
 
 script:
-  - python tests/test.py
+  - python tests/arms.py
+  - python tests/algorithms.py
 
