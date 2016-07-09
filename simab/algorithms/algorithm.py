@@ -41,7 +41,7 @@ class Algorithm(object):
         return selected_arm
 
     def _update(self, selected_arm, reward):
-        for idx, _ in enumerate(self.arms):
+        for idx, arm in enumerate(self.arms):
             if selected_arm == idx:
                 self.history[idx].append(reward)
             else:

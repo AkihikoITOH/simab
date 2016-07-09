@@ -14,14 +14,15 @@ class Arm(object):
         self.is_predicted = False
         self.count = 0
 
-    def pick(self):
+    def pick(self, dry=False):
         """ Pick a reward from prediction only if prediction exists.
         """
         if self.is_predicted:
             reward = self.prediction[self.count]
         else:
             reward = None
-        self.count += 1
+        if not dry:
+            self.count += 1
         return reward
 
     def predict(self, max_rounds=1000, prediction=[]):
@@ -34,7 +35,7 @@ class Arm(object):
         if prediction and len(prediction)>0:
             self.prediction = prediction
         else:
-            self.prediction = [self.pick() for _ in range(max_rounds)]
+            self.prediction = [self.pick(dry=True) for _ in range(max_rounds)]
         self.is_predicted = True
 
 

@@ -6,6 +6,8 @@ import os
 import sys
 from simab.arms.normal import NormalArm
 
+ROUNDS = 100
+
 class TestNormalArm(unittest.TestCase):
     def test_pick(self,):
         arm = NormalArm(0.5, 0.2)
@@ -14,11 +16,10 @@ class TestNormalArm(unittest.TestCase):
 
     def test_prediction(self,):
         arm = NormalArm(0.5, 0.2)
-        arm.predict(max_rounds=100)
+        arm.predict(max_rounds=ROUNDS)
         results = []
-        for _ in range(100):
+        for _ in range(ROUNDS):
             results.append(arm.pick())
-            arm.count += 1
         self.assertEqual(arm.prediction, results)
 
         arm = NormalArm(0.5, 0.2)

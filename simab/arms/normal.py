@@ -21,8 +21,8 @@ class NormalArm(Arm):
     def _is_valid_reward(self, reward):
         return self.truncate is None or (reward>=self.truncate[0] and reward<=self.truncate[1])
 
-    def pick(self):
-        reward = Arm.pick(self)
+    def pick(self, dry=False):
+        reward = Arm.pick(self, dry)
         # If prediction exists, simply use it.
         while reward is None or not self._is_valid_reward(reward):
             reward = random.gauss(self.mu, self.sigma)
