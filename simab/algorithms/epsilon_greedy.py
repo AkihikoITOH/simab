@@ -6,7 +6,7 @@ from .algorithm import *
 class EpsilonGreedy(Algorithm):
     """ Epsilon-Greedy Algorithm
 
-    :param epsolon:
+    :param epsilon:
     """
     def __init__(self, arms, epsilon):
         Algorithm.__init__(self, arms)

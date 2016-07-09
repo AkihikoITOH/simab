@@ -21,14 +21,20 @@ class Arm(object):
             reward = self.prediction[self.count]
         else:
             reward = None
+        self.count += 1
         return reward
 
-    def predict(self, max_rounds):
+    def predict(self, max_rounds=1000, prediction=[]):
         """ Set designated number of values as a prediction.
         This method is used if you want to compare the performance of each algorithm to oracle.
 
         :param max_rounds: maximum number of rounds to predict
+        :param prediction: float list of prediction
         """
-        self.prediction = [self.pick() for _ in range(max_rounds)]
+        if prediction and len(prediction)>0:
+            self.prediction = prediction
+        else:
+            self.prediction = [self.pick() for _ in range(max_rounds)]
         self.is_predicted = True
+
 

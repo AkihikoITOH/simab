@@ -46,7 +46,9 @@ class Algorithm(object):
                 self.history[idx].append(reward)
             else:
                 self.history[idx].append(None)
-        self.arms[selected_arm].count += 1
+            # increment each arm's count if its rewards are predicted.
+            if arm.is_predicted and idx!=selected_arm:
+                arm.count += 1
 
     def play(self, dry=False):
         selected_arm = self._select_arm()
