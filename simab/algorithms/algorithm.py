@@ -23,6 +23,14 @@ def get_means(history):
     dense_history = get_dense_history(history)
     return [sum(h)/float(len(h)) if len(h)>0 else None for h in dense_history]
 
+def get_unknown_arm(history):
+    unknown = None
+    for idx, hist_of_arm in enumerate(get_dense_history(history)):
+        if len(hist_of_arm) == 0:
+            unknown = idx
+            break
+    return unknown
+
 class Algorithm(object):
     """ Abstract class for various Multi-Armed Bandit algorithms.
 
