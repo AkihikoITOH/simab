@@ -7,23 +7,23 @@
 
 ## Algorithms
 
-[x] Epsilon First
-[x] Epsilon Greedy
-[x] Softmax
-[x] UCB1
+- [x] Epsilon First
+- [x] Epsilon Greedy
+- [x] Softmax
+- [x] UCB1
 
-[x] Random: randomly choose an arm
-[x] Oracle: always choose the best arm
-[x] Single: keep choosing a specific arm
+- [x] Random: randomly choose an arm
+- [x] Oracle: always choose the best arm
+- [x] Single: keep choosing a specific arm
 
 ## Arms
 
-[x] Normal Distribution
-[] Gaussian Mixture Model
+- [x] Normal Distribution
+- [] Gaussian Mixture Model
 
 ## Installation
 
-```bash
+```python
 $ pip install mab
 ```
 
