@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 
+# TODO: GMMのアームを扱えるようにする
+
 import math
 import random
 
