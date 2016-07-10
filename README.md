@@ -19,7 +19,7 @@
 ## Arms
 
 - [x] Normal Distribution
-- [] Gaussian Mixture Model
+- [ ] Gaussian Mixture Model
 
 ## Installation
 
