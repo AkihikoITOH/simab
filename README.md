@@ -24,7 +24,7 @@
 ## Installation
 
 ```python
-$ pip install mab
+$ pip install simab
 ```
 
 ## Usage
