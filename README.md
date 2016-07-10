@@ -11,7 +11,6 @@
 - [x] Epsilon Greedy
 - [x] Softmax
 - [x] UCB1
-
 - [x] Random: randomly choose an arm
 - [x] Oracle: always choose the best arm
 - [x] Single: keep choosing a specific arm
