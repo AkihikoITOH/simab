@@ -1,3 +1,5 @@
 simab
 codeclimate-test-reporter
 coverage
+numpy
+scikit-learn
