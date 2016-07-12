@@ -37,7 +37,7 @@ class GMMArm(Arm):
         reward = Arm.pick(self, dry)
         # If prediction exists, simply use it.
         while not self._is_valid_reward(reward):
-            reward = self.gmm.sample(1)
+            reward = self.gmm.sample(1)[0][0]
         return reward
 
 
