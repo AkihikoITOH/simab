@@ -40,6 +40,6 @@ setup(
         include_package_data=True,
         zip_safe=True,
         # long_description=read_md('README.md'),
-        install_requires=[numpy, scikit-learn],
+        install_requires=['numpy', 'scikit-learn'],
     )
 
