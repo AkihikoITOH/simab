@@ -29,17 +29,14 @@ class GMMArm(Arm):
         self.gmm = mixture.GMM(n_components=self.num_mix)
         samples = []
         for i in range(self.num_mix):
-            samples += [random.gauss(self.mus[i], self.sigmas[i]) for _ in range(weights[i]*10000)]
+            samples += [random.gauss(self.mus[i], self.sigmas[i]) for _ in range(int(weights[i]*10000))]
         obs = np.array([[sample] for sample in samples if sample>=self.truncate[0] and sample<=self.truncate[1]])
         self.gmm.fit(obs)
-
-    def _is_valid_reward(self, reward):
-        return self.truncate is None or (reward>=self.truncate[0] and reward<=self.truncate[1])
 
     def pick(self, dry=False):
         reward = Arm.pick(self, dry)
         # If prediction exists, simply use it.
-        while reward is None or not self._is_valid_reward(reward):
+        while not self._is_valid_reward(reward):
             reward = self.gmm.sample(1)
         return reward
 

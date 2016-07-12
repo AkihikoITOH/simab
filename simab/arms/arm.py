@@ -13,9 +13,13 @@ class Arm(object):
         self.prediction = None
         self.is_predicted = False
         self.count = 0
+        self.truncate = None
 
     def reset(self):
         self.count = 0
+
+    def _is_valid_reward(self, reward):
+        return reward is not None and (self.truncate is None or (reward>=self.truncate[0] and reward<=self.truncate[1]))
 
     def pick(self, dry=False):
         """ Pick a reward from prediction only if prediction exists.
