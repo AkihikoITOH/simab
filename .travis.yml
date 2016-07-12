@@ -9,7 +9,7 @@ virtualenv:
 
 before_install:
   - sudo apt-get -qq update
-  - sudo apt-get install -11 -y python-numpy python-scipy python-matplotlib python-pandas python-sympy python-nose
+  - sudo apt-get install -qq -y python-numpy python-scipy python-matplotlib python-pandas python-sympy python-nose
 
 install:
   - pip install -r requirements.txt
