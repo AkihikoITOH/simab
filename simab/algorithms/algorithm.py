@@ -155,11 +155,11 @@ class Algorithm(object):
         summary['empirical_sds'] = get_sds(self.history)
         if self.mixture_expected:
             summary['evals_mixture'] = self.evals_mixture
-            summary['true_means'] = [arm.mu for arm in self.arms]
-            summary['true_sds'] = [arm.sigma for arm in self.arms]
-        else:
             summary['true_means'] = [arm.mus for arm in self.arms]
             summary['true_sds'] = [arm.sigmas for arm in self.arms]
+        else:
+            summary['true_means'] = [arm.mu for arm in self.arms]
+            summary['true_sds'] = [arm.sigma for arm in self.arms]
         is_every_arm_predicted = all([arm.is_predicted for arm in self.arms])
         if is_every_arm_predicted:
             summary['predictions'] = [arm.prediction for arm in self.arms]
