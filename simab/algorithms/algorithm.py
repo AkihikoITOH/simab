@@ -39,11 +39,15 @@ def get_sds(history):
     return [math.sqrt(uv) for uv in unbiased_variances]
 
 def get_log_likelihood(series, mean, sd):
-    if sd > 0.0:
+    # TODO: ここどうすべきか
+    if sd!=0.0:
         first = -float(len(series))/2.0 * math.log(2.0*math.pi*(sd**2.0))
     else:
         first = 0.0
-    second = -1.0/(2.0*(sd**2.0))*sum([(mean-s)**2.0 for s in series])
+    if sd!=0.0 and len(series)>0:
+        second = -1.0/(2.0*(sd**2.0))*sum([(mean-s)**2.0 for s in series])
+    else:
+        second = 0.0
     return first + second
 
 def get_unknown_arm(history):
@@ -97,14 +101,17 @@ class Algorithm(object):
         # Calculate evaluations for mixture models
         self.evals_mixture = [{'1': {'means': [mean], 'sds': [sd], 'likelihoods': [get_log_likelihood(hist, mean, sd)], 'populations': [len(hist)], 'likelihood': get_log_likelihood(hist, mean, sd)}} for mean, sd, hist in zip(means, sds, self.history)]
         for idx_arm, (arm, hist) in enumerate(zip(self.arms, self.history)):
+            # TODO: 応急処置的
             for num_components in [2, 3]:
+                if len(hist)<num_components:
+                    return means
                 gmm = mixture.GMM(n_components=num_components)
                 obs = np.array([[sample] for sample in hist])
                 gmm.fit(obs)
-                weights = gmm.weights_
-                means = gmm.means_
-                covars = gmm.covars_
-                predictions = gmm.predict(obs)
+                weights = gmm.weights_.tolist()
+                means = [m[0] for m in gmm.means_.tolist()]
+                covars = [c[0] for c in gmm.covars_.tolist()]
+                predictions = gmm.predict(obs).tolist()
                 history_classified = []
                 self.evals_mixture[idx_arm][str(num_components)] = {'means': [], 'sds': [], 'likelihoods': [], 'populations': [], 'likelihood': None}
                 for i in range(num_components):
@@ -135,6 +142,8 @@ class Algorithm(object):
                     mean_of_max_populated_class = eval_[str(num_components)]['means'][max_populated_class]
                     evals.append(mean_of_max_populated_class)
 
+        print evals
+        print type(evals)
         # Generate list of evaluations of arms
         return evals
 
