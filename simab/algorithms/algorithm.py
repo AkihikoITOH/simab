@@ -151,15 +151,12 @@ class Algorithm(object):
         summary['history'] = self.history
         summary['total_reward'] = sum([sum(h) for h in get_dense_history(self.history)])
         summary['plays'] = [len(h) for h in get_dense_history(self.history)]
+        summary['true_means'] = [arm.mu if isinstance(arm, NormalArm) else arm.mus for arm in self.arms]
+        summary['true_sds'] = [arm.sigma if isinstance(arm, NormalArm) else arm.sigmas  for arm in self.arms]
         summary['empirical_means'] = get_means(self.history)
         summary['empirical_sds'] = get_sds(self.history)
         if self.mixture_expected:
             summary['evals_mixture'] = self.evals_mixture
-            summary['true_means'] = [arm.mus for arm in self.arms]
-            summary['true_sds'] = [arm.sigmas for arm in self.arms]
-        else:
-            summary['true_means'] = [arm.mu for arm in self.arms]
-            summary['true_sds'] = [arm.sigma for arm in self.arms]
         is_every_arm_predicted = all([arm.is_predicted for arm in self.arms])
         if is_every_arm_predicted:
             summary['predictions'] = [arm.prediction for arm in self.arms]
