@@ -95,8 +95,9 @@ class TestEFirst(unittest.TestCase):
             arms.append(NormalArm(0.1*float(i), 0.1))
         for arm in arms:
             arm.predict(1000)
-        algorithm = EpsilonFirst(arms, 0.05)
-        for _ in range(ROUNDS):
+        algorithm = EpsilonFirst(arms, 0.5)
+        for i in range(ROUNDS):
+            print '%sth play in epsilon first.' % i
             algorithm.play()
         self.assertEqual(len(algorithm.history), len(arms))
         self.assertEqual(len(algorithm.history[0]), ROUNDS)

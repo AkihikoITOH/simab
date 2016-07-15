@@ -39,9 +39,9 @@ def get_sds(history):
     return [math.sqrt(uv) for uv in unbiased_variances]
 
 def get_log_likelihood(series, mean, sd):
-    print 'series: ', series
-    print 'mean: ', mean
-    print 'sd: ', sd
+    # print 'series: ', series
+    # print 'mean: ', mean
+    # print 'sd: ', sd
     # TODO: ここどうすべきか
     if sd!=0.0:
         first = -float(len(series))/2.0 * math.log(2.0*math.pi*(sd**2.0))
@@ -98,44 +98,46 @@ class Algorithm(object):
         means_of_arms = get_means(self.history)
         sds_of_arms = get_sds(self.history)
         self.evals_mixture = []
+        dense_history = get_dense_history(self.history)
         for _ in self.arms:
             e = {str(i): {'means': [], 'sds': [], 'likelihoods': [], 'populations': [], 'likelihood': None} for i in [1, 2, 3]}
             self.evals_mixture.append(e)
 
-        for idx, (mixture, arm) in enumerate(zip(self.evals_mixture, self.arms)):
-            mixture['1']['means'].append(means_of_arms[idx])
-            mixture['1']['sds'].append(sds_of_arms[idx])
-            mixture['1']['likelihoods'].append(get_log_likelihood(self.history[idx], means_of_arms[idx], sds_of_arms[idx]))
-            mixture['1']['populations'].append(len(self.history(idx)))
-            mixture['1']['likelihood'] = get_log_likelihood(self.history[idx], means_of_arms[idx], sds_of_arms[idx])
+        for idx, (mix, arm) in enumerate(zip(self.evals_mixture, self.arms)):
+            mix['1']['means'].append(means_of_arms[idx])
+            mix['1']['sds'].append(sds_of_arms[idx])
+            mix['1']['likelihoods'].append(get_log_likelihood(dense_history[idx], means_of_arms[idx], sds_of_arms[idx]))
+            mix['1']['populations'].append(len(dense_history[idx]))
+            mix['1']['likelihood'] = get_log_likelihood(dense_history[idx], means_of_arms[idx], sds_of_arms[idx])
 
             for n_components in [2, 3]:
                 gmm = mixture.GMM(n_components=n_components)
-                obs = np.array([[sample] for sample in self.history[idx]])
+                obs = np.array([[sample] for sample in dense_history[idx]])
                 gmm.fit(obs)
                 weights = gmm.weights_.tolist()
                 means = [m[0] for m in gmm.means_.tolist()]
                 covars = [c[0] for c in gmm.covars_.tolist()]
                 predictions = gmm.predict(obs).tolist()
                 for i in range(n_components):
-                    series = [s for s, p in zip(self.history[idx], predictions) if int(p)==i]
+                    series = [s for s, p in zip(dense_history[idx], predictions) if int(p)==i]
                     mean = means[i]
                     unbiased_variance = sum([(means-r)**2.0 for r in series])/float(len(series)-1)
                     sd = math.sqrt(unbiased_variance)
                     population = len(series)
-                    mixture[str(n_components)]['mean'].append(mean)
-                    mixture[str(n_components)]['sds'].append(sd)
-                    mixture[str(n_components)]['likelihoods'].append(get_log_likelihood(series, mean, sd))
-                    mixture[str(n_components)]['populations'].append(len(series))
-                mixture[str(n_components)]['likelihood'] = sum(mixture[str(n_components)]['likelihoods'])
+                    mix[str(n_components)]['mean'].append(mean)
+                    mix[str(n_components)]['sds'].append(sd)
+                    print 'series', series
+                    mix[str(n_components)]['likelihoods'].append(get_log_likelihood(series, mean, sd))
+                    mix[str(n_components)]['populations'].append(len(series))
+                mix[str(n_components)]['likelihood'] = sum(mix[str(n_components)]['likelihoods'])
 
         # Decide which model to use (maximum likelihood)
         evals = []
-        for idx, mixture in enumerate(self.evals_mixture):
+        for idx, mix in enumerate(self.evals_mixture):
             # Check how many mixture components leads to the highest likelihood
-            mix_max_likelihood = idx_max([mixture[str(n_components)]['likelihood'] for n_components in [1, 2, 3]]) + 1
-            max_populated_class = idx_max(mixture[str(mix_max_likelihood)]['populations'])
-            mean_of_max_populated_class = mixture[str(mix_max_likelihood)]['means'][max_populated_class]
+            mix_max_likelihood = idx_max([mix[str(n_components)]['likelihood'] for n_components in [1, 2, 3]]) + 1
+            max_populated_class = idx_max(mix[str(mix_max_likelihood)]['populations'])
+            mean_of_max_populated_class = mix[str(mix_max_likelihood)]['means'][max_populated_class]
             evals.append(mean_of_max_populated_class)
 
         return evals
