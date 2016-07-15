@@ -39,7 +39,10 @@ def get_sds(history):
     return [math.sqrt(uv) for uv in unbiased_variances]
 
 def get_log_likelihood(series, mean, sd):
-    first = -float(len(series))/2.0 * math.log(2.0*math.pi*(sd**2.0))
+    if sd > 0.0:
+        first = -float(len(series))/2.0 * math.log(2.0*math.pi*(sd**2.0))
+    else:
+        first = 0.0
     second = -1.0/(2.0*(sd**2.0))*sum([(mean-s)**2.0 for s in series])
     return first + second
 
