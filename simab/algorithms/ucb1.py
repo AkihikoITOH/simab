@@ -10,8 +10,8 @@ def _bonus(rounds, plays):
 class UCB1(Algorithm):
     """ Upper Confidence Bounds Algorithm
     """
-    def __init__(self, arms, label='UCB1'):
-        Algorithm.__init__(self, arms, label=label)
+    def __init__(self, arms, label='UCB1', mixture_expected=False):
+        Algorithm.__init__(self, arms, label=label, mixture_expected=mixture_expected)
 
     def _rounds_so_far(self):
         return len(self.history[0])

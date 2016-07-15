@@ -8,8 +8,8 @@ class EpsilonGreedy(Algorithm):
 
     :param epsilon:
     """
-    def __init__(self, arms, epsilon, label=None):
-        Algorithm.__init__(self, arms, label=label)
+    def __init__(self, arms, epsilon, label=None, mixture_expected=False):
+        Algorithm.__init__(self, arms, label=label, mixture_expected=mixture_expected)
         self.epsilon = epsilon
         if self.label is None:
             self.label = 'Epsilon Greedy(e=%s)' % self.epsilon

@@ -10,8 +10,8 @@ class EpsilonFirst(Algorithm):
     :param epsilon:
     :param rounds: total rounds
     """
-    def __init__(self, arms, epsilon, rounds=None, label=None):
-        Algorithm.__init__(self, arms, label=label)
+    def __init__(self, arms, epsilon, rounds=None, label=None, mixture_expected=False):
+        Algorithm.__init__(self, arms, label=label, mixture_expected=mixture_expected)
         self.epsilon = epsilon
         if rounds is None:
             self.rounds = len(arms[0].prediction)

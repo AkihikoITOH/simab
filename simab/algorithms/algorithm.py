@@ -56,7 +56,7 @@ class Algorithm(object):
 
     :param arms: list of arms
     :param label: label of the arm
-    :param mixture_expected: boolean flag. True if try gmm-expected arms
+    :param mixture_expected: boolean flag. True if expected to have gmm arms.
     """
     def __init__(self, arms, label='Algorithm', mixture_expected=False):
         self.arms = arms
@@ -124,8 +124,8 @@ class Algorithm(object):
         evals = []
         components = []
         for idx, eval_ in enumerate(self.evals_mixture):
-            max_likelihood = max([eval_[str(num_components)]['likelihood'] for num_components in range(1, 4)])
-            for i in range(1, 4):
+            max_likelihood = max([eval_[str(num_components)]['likelihood'] for num_components in [1, 2, 3]])
+            for num_components in [1, 2, 3]:
                 if eval_[str(num_components)]['likelihood'] == max_likelihood:
                     components.append(num_components)
                     max_populated_class = idx_max(eval_[str(num_components)]['populations'])
@@ -155,6 +155,7 @@ class Algorithm(object):
         summary['empirical_sds'] = get_sds(self.history)
         summary['total_reward'] = sum([sum(h) for h in get_dense_history(self.history)])
         summary['plays'] = [len(h) for h in get_dense_history(self.history)]
+        summary['evals_mixture'] = self.evals_mixture
         is_every_arm_predicted = all([arm.is_predicted for arm in self.arms])
         if is_every_arm_predicted:
             summary['predictions'] = [arm.prediction for arm in self.arms]
