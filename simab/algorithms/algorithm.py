@@ -39,6 +39,9 @@ def get_sds(history):
     return [math.sqrt(uv) for uv in unbiased_variances]
 
 def get_log_likelihood(series, mean, sd):
+    print 'series: ', series
+    print 'mean: ', mean
+    print 'sd: ', sd
     # TODO: ここどうすべきか
     if sd!=0.0:
         first = -float(len(series))/2.0 * math.log(2.0*math.pi*(sd**2.0))
@@ -92,38 +95,95 @@ class Algorithm(object):
                 arm.count += 1
 
     def _get_evals(self):
-        means = get_means(self.history)
-        sds = get_sds(self.history)
+        means_of_arms = get_means(self.history)
+        sds_of_arms = get_sds(self.history)
+        self.evals_mixture = []
+        for _ in self.arms:
+            e = {str(i): {'means': [], 'sds': [], 'likelihoods': [], 'populations': [], 'likelihood': None} for i in [1, 2, 3]}
+            self.evals_mixture.append(e)
 
-        if not self.mixture_expected:
-            return means
+        for idx, (mixture, arm) in enumerate(zip(self.evals_mixture, self.arms)):
+            mixture['1']['means'].append(means_of_arms[idx])
+            mixture['1']['sds'].append(sds_of_arms[idx])
+            mixture['1']['likelihoods'].append(get_log_likelihood(self.history[idx], means_of_arms[idx], sds_of_arms[idx]))
+            mixture['1']['populations'].append(len(self.history(idx)))
+            mixture['1']['likelihood'] = get_log_likelihood(self.history[idx], means_of_arms[idx], sds_of_arms[idx])
 
-        # Calculate evaluations for mixture models
-        self.evals_mixture = [{'1': {'means': [mean], 'sds': [sd], 'likelihoods': [get_log_likelihood(hist, mean, sd)], 'populations': [len(hist)], 'likelihood': get_log_likelihood(hist, mean, sd)}} for mean, sd, hist in zip(means, sds, self.history)]
-        for idx_arm, (arm, hist) in enumerate(zip(self.arms, self.history)):
-            # TODO: 応急処置的
-            for num_components in [2, 3]:
-                if len(hist)<num_components:
-                    return means
-                gmm = mixture.GMM(n_components=num_components)
-                obs = np.array([[sample] for sample in hist])
+            for n_components in [2, 3]:
+                gmm = mixture.GMM(n_components=n_components)
+                obs = np.array([[sample] for sample in self.history[idx]])
                 gmm.fit(obs)
                 weights = gmm.weights_.tolist()
                 means = [m[0] for m in gmm.means_.tolist()]
                 covars = [c[0] for c in gmm.covars_.tolist()]
                 predictions = gmm.predict(obs).tolist()
+                for i in range(n_components):
+                    series = [s for s, p in zip(self.history[idx], predictions) if int(p)==i]
+                    mean = means[i]
+                    unbiased_variance = sum([(means-r)**2.0 for r in series])/float(len(series)-1)
+                    sd = math.sqrt(unbiased_variance)
+                    population = len(series)
+                    mixture[str(n_components)]['mean'].append(mean)
+                    mixture[str(n_components)]['sds'].append(sd)
+                    mixture[str(n_components)]['likelihoods'].append(get_log_likelihood(series, mean, sd))
+                    mixture[str(n_components)]['populations'].append(len(series))
+                mixture[str(n_components)]['likelihood'] = sum(mixture[str(n_components)]['likelihoods'])
+
+        # Decide which model to use (maximum likelihood)
+        evals = []
+        for idx, mixture in enumerate(self.evals_mixture):
+            # Check how many mixture components leads to the highest likelihood
+            mix_max_likelihood = idx_max([mixture[str(n_components)]['likelihood'] for n_components in [1, 2, 3]]) + 1
+            max_populated_class = idx_max(mixture[str(mix_max_likelihood)]['populations'])
+            mean_of_max_populated_class = mixture[str(mix_max_likelihood)]['means'][max_populated_class]
+            evals.append(mean_of_max_populated_class)
+
+        return evals
+
+    def _get_evals_(self):
+        """ Deprecated
+        """
+        means_of_arms = get_means(self.history)
+        sds_of_arms = get_sds(self.history)
+        has_sufficient_history = True
+        for hist in self.history:
+            has_sufficient_history = has_sufficient_history and len(hist) > 5
+
+        if not self.mixture_expected or not has_sufficient_history:
+            return means_of_arms
+
+        # Calculate evaluations for mixture models
+        self.evals_mixture = [{'1': {'means': [mean], 'sds': [sd], 'likelihoods': [get_log_likelihood(hist, mean, sd)], 'populations': [len(hist)], 'likelihood': get_log_likelihood(hist, mean, sd)}} for mean, sd, hist in zip(means_of_arms, sds_of_arms, self.history)]
+        for idx_arm, (arm, hist) in enumerate(zip(self.arms, self.history)):
+            # TODO: 応急処置的
+            for num_components in [2, 3]:
+                if len(hist)<num_components:
+                    return means_of_arms
+                gmm = mixture.GMM(n_components=num_components)
+                obs = np.array([[sample] for sample in hist])
+                gmm.fit(obs)
+                weights = gmm.weights_.tolist()
+                print 'weights: ', weights
+                means = [m[0] for m in gmm.means_.tolist()]
+                print 'means: ', means
+                covars = [c[0] for c in gmm.covars_.tolist()]
+                print 'covars: ', covars
+                predictions = gmm.predict(obs).tolist()
+                print 'type(predictions):', type(predictions)
                 history_classified = []
                 self.evals_mixture[idx_arm][str(num_components)] = {'means': [], 'sds': [], 'likelihoods': [], 'populations': [], 'likelihood': None}
                 for i in range(num_components):
-                    series = [s for s, p in zip(hist, predictions) if p==i]
+                    series = [s for s, p in zip(hist, predictions) if int(p)==i]
+                    print 'series in _get_evals:', series
                     history_classified.append(series)
-                    if len(history_classified) > 1:
-                        unbiased_variance = sum([(means[i]-r)**2.0 for r in history_classified])/float(len(history_classified)-1)
+                    if len(series) > 1:
+                        unbiased_variance = sum([(means[i]-r)**2.0 for r in series])/float(len(series)-1)
                     else:
-                        unbiased_variance = sum([(means[i]-r)**2.0 for r in history_classified])/float(len(history_classified))
+                        # unbiased_variance = sum([(means[i]-r)**2.0 for r in series])/float(len(series))
+                        unbiased_variance = 0.0
                     sd = math.sqrt(unbiased_variance)
                     likelihood = get_log_likelihood(series, means[i], sd)
-                    population = len(history_classified)
+                    population = len(series)
                     self.evals_mixture[idx_arm][str(num_components)]['means'].append(means[i])
                     self.evals_mixture[idx_arm][str(num_components)]['sds'].append(sd)
                     self.evals_mixture[idx_arm][str(num_components)]['likelihoods'].append(likelihood)
