@@ -3,6 +3,7 @@
 
 import unittest
 from simab.arms.normal import NormalArm
+from simab.arms.gmm import GMMArm
 from simab.algorithms.epsilon_first import EpsilonFirst
 from simab.algorithms.epsilon_greedy import EpsilonGreedy
 from simab.algorithms.oracle import Oracle
@@ -30,7 +31,18 @@ class TestRandom(unittest.TestCase):
         for i in range(3, 8):
             arms.append(NormalArm(0.1*float(i), 0.1))
         for arm in arms:
-            arm.predict(1000)
+            arm.predict(ROUNDS)
+        algorithm = Random(arms)
+        for _ in range(ROUNDS):
+            algorithm.play()
+        self.assertEqual(len(algorithm.history), len(arms))
+        self.assertEqual(len(algorithm.history[0]), ROUNDS)
+        algorithm.summary()
+
+    def test_mixture(self):
+        arms = []
+        for i in range(3, 8):
+            arms.append(GMMArm(mus=[0.1*float(i), 0.2+0.1*float(i)], sigmas=[0.01, 0.05], weights=[0.4, 0.6]))
         algorithm = Random(arms)
         for _ in range(ROUNDS):
             algorithm.play()
