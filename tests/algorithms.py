@@ -41,8 +41,9 @@ class TestRandom(unittest.TestCase):
 
     def test_mixture(self):
         arms = []
-        for i in range(3, 8):
-            arms.append(GMMArm(mus=[0.1*float(i), 0.2+0.1*float(i)], sigmas=[0.01, 0.05], weights=[0.4, 0.6]))
+        arms.append(NormalArm(0.2, 0.1))
+        arms.append(GMMArm(mus=[0.3, 0.7], sigmas=[0.01, 0.05], weights=[0.4, 0.6]))
+        arms.append(GMMArm(mus=[0.1, 0.5, 0.75], sigmas=[0.01, 0.1, 0.02], weights=[0.3, 0.4, 0.3]))
         algorithm = Random(arms)
         for _ in range(ROUNDS):
             algorithm.play()
@@ -69,6 +70,18 @@ class TestEGreedy(unittest.TestCase):
         for arm in arms:
             arm.predict(1000)
         algorithm = EpsilonGreedy(arms, 0.05)
+        for _ in range(ROUNDS):
+            algorithm.play()
+        self.assertEqual(len(algorithm.history), len(arms))
+        self.assertEqual(len(algorithm.history[0]), ROUNDS)
+        algorithm.summary()
+
+    def test_mixture(self):
+        arms = []
+        arms.append(NormalArm(0.2, 0.1))
+        arms.append(GMMArm(mus=[0.3, 0.7], sigmas=[0.01, 0.05], weights=[0.4, 0.6]))
+        arms.append(GMMArm(mus=[0.1, 0.5, 0.75], sigmas=[0.01, 0.1, 0.02], weights=[0.3, 0.4, 0.3]))
+        algorithm = EpsilonGreedy(arms, 0.05, mixture_expected=True)
         for _ in range(ROUNDS):
             algorithm.play()
         self.assertEqual(len(algorithm.history), len(arms))

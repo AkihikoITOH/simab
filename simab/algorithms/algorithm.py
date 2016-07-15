@@ -92,7 +92,7 @@ class Algorithm(object):
             return means
 
         # Calculate evaluations for mixture models
-        self.evals_mixture = [{'1': {'means': [mean], 'sds': [sd], 'likelihoods': [lh], 'populations': [len(hist)], 'likelihood': lh}} for mean, sd, lh, hist in zip(means, sds, likelihoods, self.history)]
+        self.evals_mixture = [{'1': {'means': [mean], 'sds': [sd], 'likelihoods': [get_log_likelihood(hist, mean, sd)], 'populations': [len(hist)], 'likelihood': get_log_likelihood(hist, mean, sd)}} for mean, sd, hist in zip(means, sds, self.history)]
         for idx_arm, (arm, hist) in enumerate(zip(self.arms, self.history)):
             for num_components in [2, 3]:
                 gmm = mixture.GMM(n_components=num_components)
