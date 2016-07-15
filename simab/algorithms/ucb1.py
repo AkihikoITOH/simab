@@ -19,11 +19,11 @@ class UCB1(Algorithm):
     def _select_arm(self):
         unknown_arm = get_unknown_arm(self.history)
         if unknown_arm is None:
-            means = get_means(self.history)
+            evals = self._get_evals()
             plays = [len(hist) for hist in get_dense_history(self.history)]
             rounds = self._rounds_so_far()
 
-            evaluations = [means[idx] + _bonus(rounds, plays[idx]) for idx in range(len(self.arms))]
+            evaluations = [evals[idx] + _bonus(rounds, plays[idx]) for idx in range(len(self.arms))]
             selected_arm = idx_max(evaluations)
         else:
             selected_arm = unknown_arm

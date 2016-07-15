@@ -16,7 +16,7 @@ class EpsilonGreedy(Algorithm):
 
     def _select_arm(self):
         probabilities = [None for _ in self.arms]
-        best_arm = idx_max(get_means(self.history))
+        best_arm = idx_max(self._get_evals())
         for i in range(len(self.arms)):
             if i == best_arm:
                 probabilities[i] = 1.0 - self.epsilon + self.epsilon/float(len(self.arms))

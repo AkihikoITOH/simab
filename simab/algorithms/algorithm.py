@@ -5,6 +5,8 @@
 
 import math
 import random
+import numpy as np
+from sklearn import mixture
 
 def idx_max(list_):
     return list_.index(max(list_))
@@ -36,6 +38,11 @@ def get_sds(history):
     unbiased_variances = get_unbiased_variances(history)
     return [math.sqrt(uv) for uv in unbiased_variances]
 
+def get_log_likelihood(series, mean, sd):
+    first = -float(len(series))/2.0 * math.log(2.0*math.pi*(sd**2.0))
+    second = -1.0/(2.0*(sd**2.0))*sum([(mean-s)**2.0 for s in series])
+    return first + second
+
 def get_unknown_arm(history):
     unknown = None
     for idx, hist_of_arm in enumerate(get_dense_history(history)):
@@ -49,8 +56,9 @@ class Algorithm(object):
 
     :param arms: list of arms
     :param label: label of the arm
+    :param mixture_expected: boolean flag. True if try gmm-expected arms
     """
-    def __init__(self, arms, label='Algorithm'):
+    def __init__(self, arms, label='Algorithm', mixture_expected=False):
         self.arms = arms
         for arm in self.arms:
             arm.reset()
@@ -61,6 +69,7 @@ class Algorithm(object):
         # float values for each round.
         self.full_history = [[] for _ in self.arms]
         self.label = label
+        self.mixture_expected = mixture_expected
 
     def _select_arm(self):
         return selected_arm
@@ -74,6 +83,57 @@ class Algorithm(object):
             # increment each arm's count if its rewards are predicted.
             if arm.is_predicted and idx!=selected_arm:
                 arm.count += 1
+
+    def _get_evals(self):
+        means = get_means(self.history)
+        sds = get_sds(self.history)
+
+        if not self.mixture_expected:
+            return means
+
+        # Calculate evaluations for mixture models
+        self.evals_mixture = [{'1': {'means': [mean], 'sds': [sd], 'likelihoods': [lh], 'populations': [len(hist)], 'likelihood': lh}} for mean, sd, lh, hist in zip(means, sds, likelihoods, self.history)]
+        for idx_arm, (arm, hist) in enumerate(zip(self.arms, self.history)):
+            for num_components in [2, 3]:
+                gmm = mixture.GMM(n_components=num_components)
+                obs = np.array([[sample] for sample in hist])
+                gmm.fit(obs)
+                weights = gmm.weights_
+                means = gmm.means_
+                covars = gmm.covars_
+                predictions = gmm.predict(obs)
+                history_classified = []
+                self.evals_mixture[idx_arm][str(num_components)] = {'means': [], 'sds': [], 'likelihoods': [], 'populations': [], 'likelihood': None}
+                for i in range(num_components):
+                    series = [s for s, p in zip(hist, predictions) if p==i]
+                    history_classified.append(series)
+                    if len(history_classified) > 1:
+                        unbiased_variance = sum([(means[i]-r)**2.0 for r in history_classified])/float(len(history_classified)-1)
+                    else:
+                        unbiased_variance = sum([(means[i]-r)**2.0 for r in history_classified])/float(len(history_classified))
+                    sd = math.sqrt(unbiased_variance)
+                    likelihood = get_log_likelihood(series, means[i], sd)
+                    population = len(history_classified)
+                    self.evals_mixture[idx_arm][str(num_components)]['means'].append(means[i])
+                    self.evals_mixture[idx_arm][str(num_components)]['sds'].append(sd)
+                    self.evals_mixture[idx_arm][str(num_components)]['likelihoods'].append(likelihood)
+                    self.evals_mixture[idx_arm][str(num_components)]['populations'].append(population)
+                self.evals_mixture[idx_arm][str(num_components)]['likelihood'] = sum(self.evals_mixture[idx_arm][str(num_components)]['likelihoods'])
+
+        # Decide which model to use (maximum likelihood)
+        evals = []
+        components = []
+        for idx, eval_ in enumerate(self.evals_mixture):
+            max_likelihood = max([eval_[str(num_components)]['likelihood'] for num_components in range(1, 4)])
+            for i in range(1, 4):
+                if eval_[str(num_components)]['likelihood'] == max_likelihood:
+                    components.append(num_components)
+                    max_populated_class = idx_max(eval_[str(num_components)]['populations'])
+                    mean_of_max_populated_class = eval_[str(num_components)]['means'][max_populated_class]
+                    evals.append(mean_of_max_populated_class)
+
+        # Generate list of evaluations of arms
+        return evals
 
     def play(self, dry=False):
         selected_arm = self._select_arm()

@@ -18,9 +18,9 @@ class Softmax(Algorithm):
     def _select_arm(self):
         unknown_arm = get_unknown_arm(self.history)
         if unknown_arm is None:
-            means = get_means(self.history)
-            divider = sum([math.exp(mean/self.tau) for mean in means])
-            probabilities = [math.exp(mean/self.tau)/divider for mean in means]
+            evals = self._get_evals()
+            divider = sum([math.exp(eval_/self.tau) for eval_ in evals ])
+            probabilities = [math.exp(eval_/self.tau)/divider for eval_ in evals ]
             selected_arm = pick_by_probability(probabilities)
         else:
             selected_arm = unknown_arm

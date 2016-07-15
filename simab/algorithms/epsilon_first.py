@@ -28,7 +28,7 @@ class EpsilonFirst(Algorithm):
         if self._rounds_so_far() <= self.exploration_rounds:
             selected_arm = random.randrange(len(self.arms))
         else:
-            selected_arm = idx_max(get_means(self.history))
+            selected_arm = idx_max(self._get_evals())
         return selected_arm
 
     def summary(self):
