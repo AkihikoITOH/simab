@@ -73,7 +73,8 @@ class Algorithm(object):
         for arm in self.arms:
             arm.reset()
         # Evaluation of each arm
-        self.evals = [None for _ in self.arms]
+        self.evals = []
+        self.full_evals = []
         # float values for played rounds and None for other rounds.
         self.history = [[] for _ in self.arms]
         # float values for each round.
@@ -111,6 +112,8 @@ class Algorithm(object):
             mix['1']['likelihood'] = get_log_likelihood(dense_history[idx], means_of_arms[idx], sds_of_arms[idx])
 
             for n_components in [2, 3]:
+                if not self.mixture_expected:
+                    break
                 is_valid = []
                 for hist in dense_history:
                     is_valid.append(len(hist) > 2*n_components)
@@ -147,6 +150,9 @@ class Algorithm(object):
             mean_of_max_populated_class = mix[str(mix_max_likelihood)]['means'][max_populated_class]
             evals.append(mean_of_max_populated_class)
 
+        self.full_evals.append(self.evals_mixture)
+        self.evals.append(evals)
+
         return evals
 
     def play(self, dry=False):
@@ -165,8 +171,14 @@ class Algorithm(object):
         summary['history'] = self.history
         summary['total_reward'] = sum([sum(h) for h in get_dense_history(self.history)])
         summary['plays'] = [len(h) for h in get_dense_history(self.history)]
-        summary['true_means'] = [arm.mu if not hasattr(arm, 'gmm') else arm.mus for arm in self.arms]
-        summary['true_sds'] = [arm.sigma if not hasattr(arm, 'gmm') else arm.sigmas  for arm in self.arms]
+        summary['evals'] = self.evals
+        summary['full_evals'] = self.full_evals
+        try:
+            summary['true_means'] = [arm.mu if not hasattr(arm, 'gmm') else arm.mus for arm in self.arms]
+            summary['true_sds'] = [arm.sigma if not hasattr(arm, 'gmm') else arm.sigmas  for arm in self.arms]
+        except:
+            summary['true_means'] = None
+            summary['true_sds'] = None
         summary['empirical_means'] = get_means(self.history)
         summary['empirical_sds'] = get_sds(self.history)
         if self.mixture_expected:

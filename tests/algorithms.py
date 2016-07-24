@@ -107,7 +107,7 @@ class TestEGreedy(unittest.TestCase):
         arms.append(NormalArm(0.2, 0.1))
         arms.append(GMMArm(mus=[0.3, 0.7], sigmas=[0.01, 0.05], weights=[0.4, 0.6]))
         arms.append(GMMArm(mus=[0.1, 0.5, 0.75], sigmas=[0.01, 0.1, 0.02], weights=[0.3, 0.4, 0.3]))
-        algorithm = EpsilonGreedy(arms, 0.05)
+        algorithm = EpsilonGreedy(arms, 0.05, mixture_expected=True)
         for arm in arms:
             arm.predict(ROUNDS)
         for _ in range(ROUNDS):
@@ -138,7 +138,7 @@ class TestEFirst(unittest.TestCase):
         arms.append(GMMArm(mus=[0.1, 0.5, 0.75], sigmas=[0.01, 0.1, 0.02], weights=[0.3, 0.4, 0.3]))
         for arm in arms:
             arm.predict(ROUNDS)
-        algorithm = EpsilonFirst(arms, 0.1)
+        algorithm = EpsilonFirst(arms, 0.1, mixture_expected=True)
         for i in range(ROUNDS):
             # print '%sth play in epsilon first.' % i
             algorithm.play()
@@ -205,7 +205,7 @@ class TestSoftmax(unittest.TestCase):
         arms.append(NormalArm(0.2, 0.1))
         arms.append(GMMArm(mus=[0.3, 0.7], sigmas=[0.01, 0.05], weights=[0.4, 0.6]))
         arms.append(GMMArm(mus=[0.1, 0.5, 0.75], sigmas=[0.01, 0.1, 0.02], weights=[0.3, 0.4, 0.3]))
-        algorithm = Softmax(arms, 0.08)
+        algorithm = Softmax(arms, 0.08, mixture_expected=True)
         for _ in range(ROUNDS):
             algorithm.play()
         self.assertEqual(len(algorithm.history), len(arms))
@@ -219,7 +219,7 @@ class TestSoftmax(unittest.TestCase):
         arms.append(GMMArm(mus=[0.1, 0.5, 0.75], sigmas=[0.01, 0.1, 0.02], weights=[0.3, 0.4, 0.3]))
         for arm in arms:
             arm.predict(ROUNDS)
-        algorithm = Softmax(arms, 0.1)
+        algorithm = Softmax(arms, 0.1, mixture_expected=True)
         for i in range(ROUNDS):
             algorithm.play()
         self.assertEqual(len(algorithm.history), len(arms))
@@ -256,7 +256,7 @@ class TestUCB1(unittest.TestCase):
         arms.append(NormalArm(0.2, 0.1))
         arms.append(GMMArm(mus=[0.3, 0.7], sigmas=[0.01, 0.05], weights=[0.4, 0.6]))
         arms.append(GMMArm(mus=[0.1, 0.5, 0.75], sigmas=[0.01, 0.1, 0.02], weights=[0.3, 0.4, 0.3]))
-        algorithm = UCB1(arms)
+        algorithm = UCB1(arms, mixture_expected=True)
         for _ in range(ROUNDS):
             algorithm.play()
         self.assertEqual(len(algorithm.history), len(arms))
@@ -270,7 +270,7 @@ class TestUCB1(unittest.TestCase):
         arms.append(GMMArm(mus=[0.1, 0.5, 0.75], sigmas=[0.01, 0.1, 0.02], weights=[0.3, 0.4, 0.3]))
         for arm in arms:
             arm.predict(ROUNDS)
-        algorithm = UCB1(arms)
+        algorithm = UCB1(arms, mixture_expected=True)
         for i in range(ROUNDS):
             # print '%sth play in epsilon first.' % i
             algorithm.play()
